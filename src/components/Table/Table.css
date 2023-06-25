@@ -1,3 +1,8 @@
 .selected {
-  background-color: aqua;
+  background-color: #fdfd96;
+}
+
+th {
+  border: 2px solid grey;
+  padding: 5px;
 }
