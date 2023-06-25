@@ -2,8 +2,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Table.css";
+import { AiFillHome } from "react-icons/ai";
 
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Book } from "../../types/book";
 import { BreadcrumbState } from "../../types/breadcrumbState";
 
@@ -18,9 +19,9 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
     selectedItemId: null,
   });
 
-  const handleRowClick = (rowId: number) => {
+  const handleRowClick = (rowId: number, item: any) => {
     const isSelected = selectedRows.includes(rowId);
-
+    navigate(`/${item.id}`);
     if (isSelected) {
       return;
     }
@@ -46,26 +47,36 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
   useEffect(() => {
     if (location.pathname === "/") {
       setBookList([]);
+      setSelectedRows([]);
     }
   }, [location]);
 
-  const handleItemClick = (itemId: String, authors: any) => {
+  const handleItemClick = (itemId: any, authors: any) => {
     // Handle the breadcrumb item click if needed
     console.log("Clicked on item ID:", itemId);
-    setState((prevState: any) => ({
-      ...prevState,
+    setState({
       selectedItemId: itemId,
       breadcrumbItems: authors,
-    }));
+    });
 
-    // Reset the last URL
-    navigate("/");
     setBookList([{ volumeInfo: { title: "" } }]);
+  };
+
+  const resetUrl = () => {
+    navigate("/");
   };
 
   return (
     <div className="md:p-10">
-      <table className="bg-blue-100 m-auto">
+      <div className="flex justify-center items-center">
+        <button
+          onClick={resetUrl}
+          className="bg-blue-400 w-24 h-10 text-xl text-white rounded-md flex justify-center items-center"
+        >
+          Home <AiFillHome className="ml-1" />
+        </button>
+      </div>
+      <table className="bg-blue-100 m-auto cursor-pointer mt-10">
         <thead className="bg-blue-200">
           <tr>
             <th>Title:</th>
@@ -78,40 +89,15 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
             <tr
               key={item.id}
               onClick={() => {
-                handleRowClick(index);
+                resetUrl();
+                handleRowClick(index, item);
+                handleItemClick(item.id, item.volumeInfo.authors);
               }}
-              className={selectedRows.includes(index) ? "selected" : ""}
+              className={selectedRows.includes(index) ? "selected" : undefined}
             >
-              <th>
-                <Link
-                  to={item.id}
-                  onClick={() =>
-                    handleItemClick(item.id, item.volumeInfo.authors)
-                  }
-                >
-                  {item.volumeInfo.title}
-                </Link>
-              </th>
-              <th>
-                <Link
-                  to={item.id}
-                  onClick={() =>
-                    handleItemClick(item.id, item.volumeInfo.authors)
-                  }
-                >
-                  {item.volumeInfo.authors}
-                </Link>
-              </th>
-              <th>
-                <Link
-                  to={item.id}
-                  onClick={() =>
-                    handleItemClick(item.id, item.volumeInfo.authors)
-                  }
-                >
-                  {item.volumeInfo.categories}
-                </Link>
-              </th>
+              <th>{item.volumeInfo.title}</th>
+              <th>{item.volumeInfo.authors}</th>
+              <th>{item.volumeInfo.categories}</th>
             </tr>
           ))}
         </tbody>

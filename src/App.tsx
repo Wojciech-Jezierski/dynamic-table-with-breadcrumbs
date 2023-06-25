@@ -1,13 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 
 import { Table } from "./components/Table/Table";
+import { Data } from "./types/data";
 
 const App: React.FC = () => {
-  const [data, setData] = useState<any>([
+  const [data, setData] = useState<Data>([
     { id: "", volumeInfo: { title: "", authors: [] } },
   ]);
   const [fetchError, setFetchError] = useState();

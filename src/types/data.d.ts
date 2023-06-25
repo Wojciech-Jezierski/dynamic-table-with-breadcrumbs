@@ -1,6 +1,9 @@
 interface ArrayData {
-  kind: String;
   id: String;
+  volumeInfo: {
+    title: String;
+    authors: Array;
+  };
 }
 
 export { Data };
