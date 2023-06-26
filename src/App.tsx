@@ -18,9 +18,6 @@ const App: React.FC = () => {
           "https://www.googleapis.com/books/v1/volumes?q=isbn"
         );
         setData(response.data.items);
-        console.log(response.data.items);
-
-        // setData(apiResponse);
       } catch (error: any) {
         setFetchError(error.message);
       }

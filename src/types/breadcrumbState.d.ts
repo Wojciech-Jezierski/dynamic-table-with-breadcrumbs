@@ -1,11 +1,6 @@
-interface BreadcrumbItem {
-  id: number;
-  label: string;
-}
-
 interface BreadcrumbState {
-  breadcrumbItems: BreadcrumbItem[];
-  selectedItemId: number | null;
+  breadcrumbItems: stringp[];
+  selectedItemId: string;
 }
 
 export { BreadcrumbState };

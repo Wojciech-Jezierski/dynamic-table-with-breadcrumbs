@@ -5,28 +5,20 @@ import "./Table.css";
 import { AiFillHome } from "react-icons/ai";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { Book } from "../../types/book";
+import { Data } from "../../types/data";
 import { BreadcrumbState } from "../../types/breadcrumbState";
 
-export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
+export const Table: React.FC<{ data: Data[] }> = ({ data }) => {
   const location = useLocation();
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [bookList, setBookList] = useState([{ volumeInfo: { title: "" } }]);
   const navigate = useNavigate();
 
-  const [state, setState] = useState<BreadcrumbState>({
-    breadcrumbItems: [],
-    selectedItemId: null,
-  });
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [bookList, setBookList] = useState([{ volumeInfo: { title: "" } }]);
 
-  const handleRowClick = (rowId: number, item: any) => {
-    const isSelected = selectedRows.includes(rowId);
-    navigate(`/${item.id}`);
-    if (isSelected) {
-      return;
-    }
-    setSelectedRows([rowId]);
-  };
+  const [state, setState] = useState<BreadcrumbState>({
+    selectedItemId: "",
+    breadcrumbItems: [],
+  });
 
   const fetchData = async (author: Object) => {
     try {
@@ -34,15 +26,16 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
         `https://www.googleapis.com/books/v1/volumes?q=${author}`
       );
       setBookList(response.data.items);
-      console.log(response.data);
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchData(state.breadcrumbItems);
-  }, [state]);
+    if (state.breadcrumbItems && state.breadcrumbItems.length > 0) {
+      fetchData(state.breadcrumbItems);
+    }
+  }, [state.breadcrumbItems]);
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -51,9 +44,16 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
     }
   }, [location]);
 
-  const handleItemClick = (itemId: any, authors: any) => {
-    // Handle the breadcrumb item click if needed
-    console.log("Clicked on item ID:", itemId);
+  const handleRowClick = (rowId: number, item: string) => {
+    const isSelected = selectedRows.includes(rowId);
+    navigate(`/${item}`);
+    if (isSelected) {
+      return;
+    }
+    setSelectedRows([rowId]);
+  };
+
+  const handleItemClick = (itemId: string, authors: string[]) => {
     setState({
       selectedItemId: itemId,
       breadcrumbItems: authors,
@@ -90,7 +90,7 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
               key={item.id}
               onClick={() => {
                 resetUrl();
-                handleRowClick(index, item);
+                handleRowClick(index, item.id);
                 handleItemClick(item.id, item.volumeInfo.authors);
               }}
               className={selectedRows.includes(index) ? "selected" : undefined}
@@ -107,7 +107,7 @@ export const Table: React.FC<{ data: Book[] }> = ({ data }) => {
         <table className="m-auto mt-10">
           <thead className="bg-blue-200">
             <tr>
-              <th>Books:</th>
+              <th>Books written by the selected author:</th>
             </tr>
           </thead>
           <tbody>
